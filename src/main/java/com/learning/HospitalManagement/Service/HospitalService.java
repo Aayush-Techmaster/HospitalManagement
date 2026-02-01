@@ -42,6 +42,12 @@ public class HospitalService {
         patient.setFirstName(request.getFirstName());
         patient.setLastName(request.getLastName());
         patient.setAge(request.getAge());
+        MedicalRecord medicalRecord = new MedicalRecord();
+        medicalRecord.setBloodReport(request.getBloodReport());
+        medicalRecord.setPastDiseases(request.getPastDiseases());
+        medicalRecord.setWeight(request.getWeight());
+        medicalRepo.save(medicalRecord);
+        patient.setMedicalRecord(medicalRecord);
         patientRepo.save(patient);
         return "Success";
     }

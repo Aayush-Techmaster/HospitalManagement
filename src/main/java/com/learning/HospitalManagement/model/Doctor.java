@@ -18,5 +18,5 @@ public class Doctor {
     private String specialisation;
 
     @OneToMany(mappedBy = "doctor")
-    private List<Appointment> appointments;
+    private List<Appointment> appointments66;
 }

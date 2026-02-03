@@ -3,12 +3,8 @@ package com.learning.HospitalManagement.Service;
 import com.learning.HospitalManagement.DTO.AppointmentRequest;
 import com.learning.HospitalManagement.DTO.DoctorRequest;
 import com.learning.HospitalManagement.DTO.PatientRequest;
-import com.learning.HospitalManagement.Repository.AppRepo;
-import com.learning.HospitalManagement.model.Appointment;
-import com.learning.HospitalManagement.model.Doctor;
-import com.learning.HospitalManagement.model.Patient;
-import com.learning.HospitalManagement.Repository.DoctorRepo;
-import com.learning.HospitalManagement.Repository.PatientRepo;
+import com.learning.HospitalManagement.Repository.*;
+import com.learning.HospitalManagement.model.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,11 +15,16 @@ public class HospitalService {
     private final DoctorRepo doctorRepo;
     private final PatientRepo patientRepo;
     private final AppRepo appRepo;
+    private final MedicalRepo medicalRepo;
+    private final MedicineRepo medicineRepo;
 
-    public HospitalService(DoctorRepo doctorRepo, PatientRepo patientRepo,AppRepo appRepo){
+    public HospitalService(DoctorRepo doctorRepo, PatientRepo patientRepo,
+                           AppRepo appRepo, MedicalRepo medicalRepo,MedicineRepo medicineRepo){
         this.doctorRepo = doctorRepo;
         this.patientRepo=patientRepo;
         this.appRepo = appRepo;
+        this.medicalRepo = medicalRepo;
+        this.medicineRepo=medicineRepo;
     }
 
     public List<Patient> getAllPatient(){
@@ -42,6 +43,9 @@ public class HospitalService {
         patient.setFirstName(request.getFirstName());
         patient.setLastName(request.getLastName());
         patient.setAge(request.getAge());
+        Medicine med = medicineRepo.findById(request.getMedicineId())
+                        .orElseThrow(()->new RuntimeException("Medicine not found"));
+        patient.setMedicines(List.of(med));
         MedicalRecord medicalRecord = new MedicalRecord();
         medicalRecord.setBloodReport(request.getBloodReport());
         medicalRecord.setPastDiseases(request.getPastDiseases());
@@ -74,5 +78,29 @@ public class HospitalService {
         return "Done with adding Appointment";
     }
 
+    public String createMedicine(Medicine medicine){
+        Medicine medicine1 = new Medicine();
+        medicine1.setName(medicine.getName());
+        medicine1.setType(medicine.getType());
+        medicine1.setCompany(medicine.getCompany());
+        medicineRepo.save(medicine1);
+        return "Successfully saved the medicine";
+    }
 
+
+    public String deleteDoctor(int DId) {
+        Doctor doc = doctorRepo.findById(DId)
+                .orElseThrow(()->new RuntimeException("Doctor not found"));
+
+
+        List<Appointment> appointments = appRepo.findByDoctorDId(DId);
+
+        for(Appointment ap:appointments){
+            ap.setDoctor(null);
+        }
+
+        appRepo.saveAll(appointments);
+        doctorRepo.delete(doc);
+        return "successfully deleted the doctor.";
+    }
 }

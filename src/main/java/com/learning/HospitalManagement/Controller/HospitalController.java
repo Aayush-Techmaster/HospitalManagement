@@ -6,6 +6,7 @@ import com.learning.HospitalManagement.DTO.DoctorRequest;
 import com.learning.HospitalManagement.DTO.PatientRequest;
 import com.learning.HospitalManagement.model.Appointment;
 import com.learning.HospitalManagement.model.Doctor;
+import com.learning.HospitalManagement.model.Medicine;
 import com.learning.HospitalManagement.model.Patient;
 import com.learning.HospitalManagement.Service.HospitalService;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +48,17 @@ public class HospitalController {
     @PostMapping("/addAppointment")
     public String createAppointment(@RequestBody AppointmentRequest appointment){
         return hospitalService.createAppointment(appointment);
+    }
+
+    @PostMapping("/addMed")
+    public String createMedicine(@RequestBody Medicine medicine){
+        return hospitalService.createMedicine(medicine);
+    }
+
+    @DeleteMapping("/deleteDoctor/{DId}")
+    public String deleteDoctor(@PathVariable int DId){
+        return hospitalService.deleteDoctor(DId);
+
     }
 
 }

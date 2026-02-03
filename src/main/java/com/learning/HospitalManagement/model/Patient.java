@@ -1,6 +1,7 @@
 package com.learning.HospitalManagement.model;
 
 
+import com.learning.HospitalManagement.Repository.MedicineRepo;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -20,5 +21,13 @@ public class Patient {
     @OneToMany(mappedBy = "patient")
     private List<Appointment> appointments;
 
+    @OneToOne
+    @JoinColumn(name="medical_record_id")
+    private MedicalRecord medicalRecord;
+
+    @ManyToMany
+    @JoinTable(name="med_patient_record",joinColumns =@JoinColumn(name="patient_id"),
+            inverseJoinColumns = @JoinColumn(name="medicine_id"))
+    private List<Medicine> medicines;
 
 }

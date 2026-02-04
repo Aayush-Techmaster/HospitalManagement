@@ -8,4 +8,6 @@ import java.util.List;
 public interface AppRepo extends JpaRepository<Appointment,Integer> {
 
     List<Appointment> findByDoctorDId(int DId);
+
+    List<Appointment> findByPatientPid(int pid);
 }

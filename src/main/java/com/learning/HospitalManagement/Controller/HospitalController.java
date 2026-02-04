@@ -1,9 +1,7 @@
 package com.learning.HospitalManagement.Controller;
 
 
-import com.learning.HospitalManagement.DTO.AppointmentRequest;
-import com.learning.HospitalManagement.DTO.DoctorRequest;
-import com.learning.HospitalManagement.DTO.PatientRequest;
+import com.learning.HospitalManagement.DTO.*;
 import com.learning.HospitalManagement.model.Appointment;
 import com.learning.HospitalManagement.model.Doctor;
 import com.learning.HospitalManagement.model.Medicine;
@@ -25,12 +23,12 @@ public class HospitalController {
     }
 
     @GetMapping("/Patient")
-    public List<Patient> getAllPatient(){
+    public List<PatientResponse> getAllPatient(){
         return hospitalService.getAllPatient();
     }
 
     @GetMapping("/Doctor")
-    public List<Doctor> getAllDoctor(){
+    public List<DoctorResponse> getAllDoctor(){
         return hospitalService.getAllDoctor();
     }
 
@@ -59,6 +57,21 @@ public class HospitalController {
     public String deleteDoctor(@PathVariable int DId){
         return hospitalService.deleteDoctor(DId);
 
+    }
+    @DeleteMapping("/deletePatient/{Pid}")
+    public String deletePatient(@PathVariable int Pid){
+        return hospitalService.deletePatient(Pid);
+    }
+
+    @GetMapping("/getAppointments")
+    public List<AppointmentResponse> getAppointments(){
+        return hospitalService.getAllAppointments();
+
+    }
+
+    @GetMapping("/getMed")
+    public List<MedResponse> getMed(){
+        return hospitalService.getAllMed();
     }
 
 }

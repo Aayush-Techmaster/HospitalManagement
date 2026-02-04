@@ -13,7 +13,7 @@ public class Patient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int Pid;
+    private int pid;
     private String FirstName;
     private String LastName;
     private int age;

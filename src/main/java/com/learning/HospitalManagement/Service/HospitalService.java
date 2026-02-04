@@ -1,11 +1,11 @@
 package com.learning.HospitalManagement.Service;
 
-import com.learning.HospitalManagement.DTO.AppointmentRequest;
-import com.learning.HospitalManagement.DTO.DoctorRequest;
-import com.learning.HospitalManagement.DTO.PatientRequest;
+import com.learning.HospitalManagement.DTO.*;
 import com.learning.HospitalManagement.Repository.*;
 import com.learning.HospitalManagement.model.*;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 
@@ -27,12 +27,29 @@ public class HospitalService {
         this.medicineRepo=medicineRepo;
     }
 
-    public List<Patient> getAllPatient(){
-        return patientRepo.findAll();
+    public List<PatientResponse> getAllPatient(){
+    List<Patient>patients=patientRepo.findAll();
+
+    return patients.stream()
+            .map(p->new PatientResponse(p.getPid(),p.getFirstName(),
+                    p.getLastName(),p.getAge()
+            ))
+            .toList();
+
     }
 
-    public List<Doctor> getAllDoctor(){
-        return doctorRepo.findAll();
+    public List<DoctorResponse> getAllDoctor(){
+
+        List<Doctor> doctors = doctorRepo.findAll();
+
+        return doctors.stream()
+                .map(d->new DoctorResponse(
+                        d.getDId(),
+                        d.getFirstName(),
+                        d.getLastName(),
+                        d.getSpecialisation()
+                ))
+                .toList();
     }
 
     public String addPatient(PatientRequest request){
@@ -103,4 +120,56 @@ public class HospitalService {
         doctorRepo.delete(doc);
         return "successfully deleted the doctor.";
     }
+
+    @Transactional
+    public String deletePatient(int Pid) {
+        Patient patient = patientRepo.findById(Pid)
+                .orElseThrow(()->new RuntimeException("Patient not found"));
+
+        List<Appointment> appointments = appRepo.findByPatientPid(Pid);
+
+        for (Appointment ap : appointments) {
+            ap.setPatient(null);
+
+        }
+        appRepo.saveAll(appointments);
+
+        patient.getMedicines().clear();
+        patientRepo.save(patient);
+
+        MedicalRecord record = patient.getMedicalRecord();
+
+        patient.setMedicalRecord(null);
+        patientRepo.save(patient);
+
+        medicalRepo.delete(record);
+
+        patientRepo.delete(patient);
+        return "Successfully removed the patient from DB";
+        }
+
+    public List<AppointmentResponse> getAllAppointments() {
+        List<Appointment>app = appRepo.findAll();
+        return app.stream()
+                .map(a->new AppointmentResponse(
+                        a.getId(),
+                        a.getPatient().getFirstName(),
+                        a.getDoctor().getFirstName()
+                ))
+                .toList();
+    }
+
+
+    public List<MedResponse> getAllMed() {
+        List<Medicine> med = medicineRepo.findAll();
+        return med.stream()
+                .map(m->new MedResponse(
+                        m.getId(),
+                        m.getName(),
+                        m.getType(),
+                        m.getCompany()
+                ))
+                .toList();
+    }
 }
+
